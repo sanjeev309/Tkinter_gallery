@@ -2,15 +2,19 @@ import numpy as np
 import cv2
 import os
 
+import glob
+
 # Install tkinter:  sudo apt install python3-tk
 import tkinter
 from PIL import ImageTk, Image
 
+from tkinter import filedialog
 
 class Interface:
 
     def __init__(self):
         self.init_ui()
+        self.index = 0
 
     def init_ui(self):
         self.window = tkinter.Tk()
@@ -39,16 +43,40 @@ class Interface:
         self.window.mainloop()
 
     def prev_callback(self):
-        print("prev called")
+        if self.index > 0:
+            self.index -= 1
+
+        print("prev called: Load:" + self.filelist[self.index])
+        print(self.index)
         return
 
     def next_callback(self):
-        print("next called")
+        if len(self.filelist) > self.index + 1:
+            self.index += 1
+        print("next called: Load:" + self.filelist[self.index])
+        print(self.index)
         return
 
     def open_folder_callback(self):
-        print("open folder called")
+        directory = filedialog.askdirectory()
+
+        if directory is not ():
+            print(directory)
+            self.generate_glob(directory)
+
+        else:
+            print("empty")
+        print("open folder called for dir:", directory)
         return
+
+    def generate_glob(self,  directory):
+        self.filelist = []
+        for name in glob.glob(os.path.join(directory,"*.jpg")):
+            print(name)
+            self.filelist.append(name)
+        self.index = 0
+        print(self.filelist)
+
 
     def get_default_frame(self):
         frame = np.zeros([300, 300, 3], dtype=np.uint8)
